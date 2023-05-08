@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace Suv
 {
-    public partial class Player
+    public partial class PlayerCharacter
     {
         public class StateStanding : PlayerStateBase
         {
-            public override void OnEnter(PlayerCharacterController owner, PlayerStateBase prevState)
+            public override void OnUpdate(PlayerCharacter owner)
             {
-
+                if (owner.playerInput.actions["Move"].IsPressed())
+                {
+                    owner.ChangeState(_stateMoving);
+                }
             }
         }
     }

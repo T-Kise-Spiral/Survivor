@@ -6,10 +6,10 @@ namespace Suv
 {
     public abstract class PlayerStateBase
     {
-        public virtual void OnEnter(Player.PlayerCharacterController owner, PlayerStateBase prevState) { }
+        public virtual void OnEnter(PlayerCharacter owner, PlayerStateBase prevState) { }
 
-        public virtual void OnUpdate(Player.PlayerCharacterController owner) { }
+        public virtual void OnUpdate(PlayerCharacter owner) { }
 
-        public virtual void OnExit(Player.PlayerCharacterController owner, PlayerStateBase nextState) { }
+        public virtual void OnExit(PlayerCharacter owner, PlayerStateBase nextState) { }
     }
 }
