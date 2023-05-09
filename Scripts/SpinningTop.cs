@@ -20,17 +20,19 @@ namespace Suv
         private void Awake()
         {
             rigidbody = GetComponent<Rigidbody>();
+            rigidbody.maxAngularVelocity = 180.0f;
         }
 
         private void FixedUpdate()
         {
             // コマ本体の回転
-            spinningTopObject.transform.Rotate(0, rotationSpeed, 0);
+            //spinningTopObject.transform.Rotate(0, rotationSpeed, 0);
 
             // ここから移動処理
             if (!_movable) return;
 
-            playerCharacter.transform.Rotate(0, playerCharacter.CurvePow, 0);
+            // playerCharacter.transform.Rotate(0, playerCharacter.CurvePow, 0);
+            rigidbody.AddTorque(playerCharacter.CurvePow, 0,0, ForceMode.Force);
             rigidbody.AddForce(playerCharacter.transform.forward.normalized * playerCharacter.AddforcePow, ForceMode.Force);
 
             Debug.DrawRay(playerCharacter.transform.position, playerCharacter.transform.forward * 2.0f, Color.blue);

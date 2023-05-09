@@ -16,11 +16,17 @@ namespace Suv
             private bool isChanging = false;
             private CancellationTokenSource _cts = null;
 
-            private float _curvePow = 1.0f;
+            private float _curvePow;
             private float _addForcePow = 10.0f;
 
             public float CurvePow => _curvePow;
             public float AddForcePow => _addForcePow;
+
+            public override void OnEnter(PlayerCharacter owner, PlayerStateBase prevState)
+            {
+                _curvePow = owner.baseCurvePow;
+                _addForcePow = owner.baseAddforcePow;
+            }
 
             public override void OnUpdate(PlayerCharacter owner)
             {
@@ -41,7 +47,7 @@ namespace Suv
                     // 速度調整
                     if (inputVec.y != 0)
                     {
-                        _addForcePow = Mathf.Clamp(_addForcePow + inputVec.y * Time.deltaTime, owner.baseAddforcePow - 2.0f, owner.baseAddforcePow + 2.0f);
+                        _addForcePow = Mathf.Clamp(_addForcePow + inputVec.y * Time.deltaTime, owner.baseAddforcePow - 2.0f, owner.baseAddforcePow);
                         Debug.Log(_addForcePow);
                     }
                 }
