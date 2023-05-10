@@ -10,11 +10,7 @@ namespace Suv
         {
             public override void OnUpdate(PlayerCharacter owner)
             {
-                // コマの回転力が０ or 耐久値が０
-                if (owner._spinningTop.IsStop) return;
-
-                // コマが地面についたら遷移する
-                if (owner._spinningTop.Movable)
+                if (owner._playerInput.actions["Move"].IsPressed())
                 {
                     owner.ChangeState(_stateMoving);
                 }

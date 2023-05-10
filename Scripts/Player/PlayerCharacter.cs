@@ -8,23 +8,19 @@ namespace Suv
 {
     public partial class PlayerCharacter : MonoBehaviour
     {
-		[SerializeField] SpinningTop _spinningTop;
-
-		[SerializeField] float baseCurvePow = 1.0f;
-		[SerializeField] float baseAddforcePow = 10.0f;
-
 		private static readonly StateIdling _stateIdling = new StateIdling();
 		private static readonly StateMoving _stateMoving = new StateMoving();
  		private PlayerStateBase _currentState = _stateIdling;
 
 		private PlayerInput _playerInput;
-
-		public float CurvePow => _stateMoving.CurvePow;
-		public float AddforcePow => _stateMoving.AddForcePow;
+		private RectTransform _rectTransform;
+		private Rigidbody2D _rigidbody2D;
 
 		private void Awake()
         {
 			_playerInput = GetComponent<PlayerInput>();
+			_rectTransform = GetComponent<RectTransform>();
+			_rigidbody2D = GetComponent<Rigidbody2D>();
         }
 
         private void Start()

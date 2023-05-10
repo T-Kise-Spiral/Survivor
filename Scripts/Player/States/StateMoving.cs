@@ -13,20 +13,12 @@ namespace Suv
         public class StateMoving : PlayerStateBase
         {
             private const float ChangeStandingStateAwaitTime = 1.0f;
+            private const float MovePow = 100.0f;
+
             private bool isChanging = false;
-            private CancellationTokenSource _cts = null;
-
-            private float _curvePow;
-            private float _addForcePow = 10.0f;
-
-            public float CurvePow => _curvePow;
-            public float AddForcePow => _addForcePow;
-
-            public override void OnEnter(PlayerCharacter owner, PlayerStateBase prevState)
-            {
-                _curvePow = owner.baseCurvePow;
-                _addForcePow = owner.baseAddforcePow;
-            }
+            private bool isInputCoolTime = false;
+            private CancellationTokenSource _ctsChangeIdling = null;
+            private CancellationTokenSource _ctsMoveCoolTime = null;
 
             public override void OnUpdate(PlayerCharacter owner)
             {
@@ -35,47 +27,36 @@ namespace Suv
 
             private void Move(PlayerCharacter owner)
             {
-                if (owner._playerInput.actions["Move"].IsPressed())
-                {
-                    Vector2 inputVec = owner._playerInput.actions["Move"].ReadValue<Vector2>();
-                    // 左右のカーブ調整
-                    if (inputVec.x != 0)
-                    {
-                        _curvePow = Mathf.Clamp(_curvePow + inputVec.x * Time.deltaTime, owner.baseCurvePow - 0.2f, owner.baseCurvePow + 0.2f); ;
-                        Debug.Log(_curvePow);
-                    }
-                    // 速度調整
-                    if (inputVec.y != 0)
-                    {
-                        _addForcePow = Mathf.Clamp(_addForcePow + inputVec.y * Time.deltaTime, owner.baseAddforcePow - 2.0f, owner.baseAddforcePow);
-                        Debug.Log(_addForcePow);
-                    }
-                }
+                Vector2 moveVec = owner._playerInput.actions["Move"].ReadValue<Vector2>();
 
-                /*
-                Vector2 moveVec = owner.playerInput.actions["Move"].ReadValue<Vector2>();
-
-                // 未入力中は一定時間後にStandingへ遷移するようにする
+                // 未入力中は一定時間後にIdlingへ遷移するようにする
                 if (moveVec == Vector2.zero && !isChanging)
                 {
                     isChanging = true;
-                    _cts?.Cancel();
-                    _cts = new CancellationTokenSource();
-                    OnStandStateChanging(owner, _cts.Token).Forget();
+                    _ctsChangeIdling?.Cancel();
+                    _ctsChangeIdling = new CancellationTokenSource();
+                    OnStandStateChanging(owner, _ctsChangeIdling.Token).Forget();
                 }
-                //  入力しているので移動処理
-                else if (moveVec != Vector2.zero)
+                // 入力しているので移動処理
+                else if (moveVec != Vector2.zero && !isInputCoolTime)
                 {
                     isChanging = false;
-                    _cts?.Cancel();
+                    _ctsChangeIdling?.Cancel();
 
-                    moveVec *= Time.deltaTime;
-                    Vector3 newPos = new Vector3(owner.transform.position.x + moveVec.x, owner.transform.position.y, owner.transform.position.z + moveVec.y);
-                    owner.transform.position = newPos;
+                    isInputCoolTime = true;
+                    moveVec *= MovePow;
+                    owner._rigidbody2D.AddForce(moveVec, ForceMode2D.Impulse);
+                    _ctsMoveCoolTime?.Cancel();
+                    _ctsMoveCoolTime = new CancellationTokenSource();
+                    OnMoveInputCoolTime(_ctsMoveCoolTime.Token).Forget();
+
+                    //moveVec *= Time.deltaTime * 10;
+                    //Vector3 newPos = new Vector3(owner._rectTransform.position.x + moveVec.x, owner._rectTransform.position.y + moveVec.y, owner._rectTransform.position.z);
+                    //owner._rectTransform.position = newPos;
                 }
-                */
             }
 
+            // 立ちへの遷移
             private async UniTask OnStandStateChanging(PlayerCharacter owner, CancellationToken token)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(ChangeStandingStateAwaitTime), cancellationToken: token);
@@ -88,11 +69,21 @@ namespace Suv
                 }
             }
 
+            private async UniTask OnMoveInputCoolTime(CancellationToken token)
+            {
+                await UniTask.DelayFrame(30, cancellationToken: token);
+
+                if (!token.IsCancellationRequested)
+                {
+                    isInputCoolTime = false;
+                }
+            }
+
             public void OnDestroy()
             {
-                _cts?.Cancel();
-                _cts?.Dispose();
-                _cts = null;
+                _ctsChangeIdling?.Cancel();
+                _ctsChangeIdling?.Dispose();
+                _ctsChangeIdling = null;
             }
         }
     }
