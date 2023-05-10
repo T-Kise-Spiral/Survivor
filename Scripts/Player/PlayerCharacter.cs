@@ -10,17 +10,20 @@ namespace Suv
     {
 		private static readonly StateIdling _stateIdling = new StateIdling();
 		private static readonly StateMoving _stateMoving = new StateMoving();
+		private static readonly StateReceivingDamage _stateReceivingDamage = new StateReceivingDamage();
  		private PlayerStateBase _currentState = _stateIdling;
 
 		private PlayerInput _playerInput;
-		private RectTransform _rectTransform;
-		private Rigidbody2D _rigidbody2D;
+		private Rigidbody _rigidbody;
+
+		private float _hp = 100;
+
+		public bool isDead => _hp <= 0;
 
 		private void Awake()
         {
 			_playerInput = GetComponent<PlayerInput>();
-			_rectTransform = GetComponent<RectTransform>();
-			_rigidbody2D = GetComponent<Rigidbody2D>();
+			_rigidbody = GetComponent<Rigidbody>();
         }
 
         private void Start()
@@ -41,9 +44,29 @@ namespace Suv
 			_currentState = nextState;
 		}
 
+        // 敵と接触したとき
+        private void OnTriggerStay(Collider other)
+        {
+			if (!other.gameObject.CompareTag(TagManager.TAG_ENEMY)) return;
+
+			// 無敵時間ならダメージを受け付けない
+			if (_stateReceivingDamage.IsReceiveDamageCoolTime) return;
+
+			_hp = Mathf.Clamp(_hp - 10, 0, _hp);
+			if (isDead)
+            {
+
+            }
+			else
+            {
+				ChangeState(_stateReceivingDamage);
+            }
+        }
+
         private void OnDestroy()
         {
 			_stateMoving.OnDestroy();
+			_stateReceivingDamage.OnDestroy();
         }
     }
 }
