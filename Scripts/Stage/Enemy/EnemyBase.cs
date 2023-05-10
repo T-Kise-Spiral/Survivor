@@ -63,7 +63,7 @@ namespace Suv
 
         private void OnTriggerEnter(Collider other)
         {
-			if (!other.gameObject.CompareTag(TagManager.TAG_WEAPON)) return;
+			if (!other.gameObject.CompareTag(ConstStringManager.TAG_WEAPON)) return;
 
 			if (_enemyStatus._hp < 0)
             {
@@ -77,7 +77,7 @@ namespace Suv
 
         private void OnTriggerStay(Collider other)
         {
-			if (!other.gameObject.CompareTag(TagManager.TAG_PLAYER)) return;
+			if (!other.gameObject.CompareTag(ConstStringManager.TAG_PLAYER)) return;
 
 			// TODO: プレイヤー側のダメージ処理を呼ぶ
 
