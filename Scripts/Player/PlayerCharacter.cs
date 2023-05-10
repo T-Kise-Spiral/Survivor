@@ -8,17 +8,22 @@ namespace Suv
 {
     public partial class PlayerCharacter : MonoBehaviour
     {
-		private static readonly StateStanding _stateStanding = new StateStanding();
+		private static readonly StateIdling _stateIdling = new StateIdling();
 		private static readonly StateMoving _stateMoving = new StateMoving();
- 		private PlayerStateBase _currentState = _stateStanding;
+		private static readonly StateReceivingDamage _stateReceivingDamage = new StateReceivingDamage();
+ 		private PlayerStateBase _currentState = _stateIdling;
 
-		private PlayerInput playerInput;
-		private RectTransform rectTransform;
+		private PlayerInput _playerInput;
+		private Rigidbody _rigidbody;
 
-        private void Awake()
+		private float _hp = 100;
+
+		public bool isDead => _hp <= 0;
+
+		private void Awake()
         {
-			playerInput = GetComponent<PlayerInput>();
-			rectTransform = GetComponent<RectTransform>();
+			_playerInput = GetComponent<PlayerInput>();
+			_rigidbody = GetComponent<Rigidbody>();
         }
 
         private void Start()
@@ -39,9 +44,29 @@ namespace Suv
 			_currentState = nextState;
 		}
 
+        // 敵と接触したとき
+        private void OnTriggerStay(Collider other)
+        {
+			if (!other.gameObject.CompareTag(TagManager.TAG_ENEMY)) return;
+
+			// 無敵時間ならダメージを受け付けない
+			if (_stateReceivingDamage.IsReceiveDamageCoolTime) return;
+
+			_hp = Mathf.Clamp(_hp - 10, 0, _hp);
+			if (isDead)
+            {
+
+            }
+			else
+            {
+				ChangeState(_stateReceivingDamage);
+            }
+        }
+
         private void OnDestroy()
         {
 			_stateMoving.OnDestroy();
+			_stateReceivingDamage.OnDestroy();
         }
     }
 }

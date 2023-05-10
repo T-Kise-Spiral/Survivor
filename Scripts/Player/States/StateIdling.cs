@@ -6,11 +6,11 @@ namespace Suv
 {
     public partial class PlayerCharacter
     {
-        public class StateStanding : PlayerStateBase
+        public class StateIdling : PlayerStateBase
         {
             public override void OnUpdate(PlayerCharacter owner)
             {
-                if (owner.playerInput.actions["Move"].IsPressed())
+                if (owner._playerInput.actions["Move"].IsPressed())
                 {
                     owner.ChangeState(_stateMoving);
                 }
