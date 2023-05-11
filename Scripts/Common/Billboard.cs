@@ -8,7 +8,11 @@ namespace Suv
     {
         void Update()
         {
-            transform.LookAt(Camera.main.transform.position);
+            Vector3 lookPos = Camera.main.transform.position;
+            //lookPos.x = transform.position.x;
+            lookPos.y = transform.position.y;
+            //lookPos.z = transform.position.z;
+            transform.LookAt(lookPos);
         }
     }
 }

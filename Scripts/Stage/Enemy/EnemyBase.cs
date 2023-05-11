@@ -31,8 +31,8 @@ namespace Suv
 		}
 		protected EnemyStatus _enemyStatus;
 
-		private static readonly StateMoving _stateMoving;
-		private static readonly StateReceivingDamage _stateReceivingDamage;
+		private static readonly StateMoving _stateMoving = new StateMoving();
+		private static readonly StateReceivingDamage _stateReceivingDamage = new StateReceivingDamage();
         private EnemyStateBase _currentState = _stateMoving;
 
         private Rigidbody _rigidbody;		
@@ -71,6 +71,7 @@ namespace Suv
             }
 			else
             {
+				_stateMoving.MoveCancel();
 				ChangeState(_stateReceivingDamage);
 			}
 		}
@@ -79,7 +80,8 @@ namespace Suv
         {
 			if (!other.gameObject.CompareTag(ConstStringManager.TAG_PLAYER)) return;
 
-			// TODO: プレイヤー側のダメージ処理を呼ぶ
+			// プレイヤー側のダメージ処理を呼ぶ
+			StageManager.I.PlayerCharacter.OnCollisionEnemy(_enemyStatus._attackPow, transform.position);
 
         }
 
