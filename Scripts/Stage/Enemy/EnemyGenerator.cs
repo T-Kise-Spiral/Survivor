@@ -48,8 +48,7 @@ namespace Suv
                 enemyCount++;
                 Vector3 generatePos = new Vector3(10, 0.5f, 2 * enemyCount);
                 EnemyBase newEnemy = Instantiate(_enemyBase, generatePos, Quaternion.identity, _enemysParent.transform);
-                newEnemy.gameObject.name = newEnemy.gameObject.name + enemyCount;
-                newEnemy.Initialize(_enemyStatusDatas[0]);
+                newEnemy.Initialize(_enemyStatusDatas[0]);             
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(_generateTimeSpan), cancellationToken: token);

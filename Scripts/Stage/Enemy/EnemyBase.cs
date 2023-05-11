@@ -62,7 +62,7 @@ namespace Suv
             }
 			else
             {
-				_stateMoving.MoveCancel();
+				_stateMoving.MoveCancel(this);
 				ChangeState(_stateReceivingDamage);
 			}
 		}
@@ -78,8 +78,8 @@ namespace Suv
 
         private void OnDestroy()
         {
-			_stateMoving.OnDestroy();
-			_stateReceivingDamage.OnDestroy();
+			_stateMoving.OnDestroy(this);
+			_stateReceivingDamage.OnDestroy(this);
         }
     }
 }

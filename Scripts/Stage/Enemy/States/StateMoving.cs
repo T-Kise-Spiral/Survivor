@@ -11,13 +11,18 @@ namespace Suv
     {
         public class StateMoving : EnemyStateBase
         {
-            private CancellationTokenSource _ctsMove = null;
+            private Dictionary<GameObject, CancellationTokenSource> _ctsDictionary = new Dictionary<GameObject, CancellationTokenSource>();
 
             public override void OnEnter(EnemyBase owner, EnemyStateBase prevState)
             {
-                _ctsMove?.Cancel();
-                _ctsMove = new CancellationTokenSource();
-                OnMove(owner, _ctsMove.Token).Forget();
+                if (!_ctsDictionary.ContainsKey(owner.gameObject))
+                {
+                    _ctsDictionary.Add(owner.gameObject, new CancellationTokenSource());
+                }
+
+                _ctsDictionary[owner.gameObject]?.Cancel();
+                _ctsDictionary[owner.gameObject] = new CancellationTokenSource();
+                OnMove(owner, _ctsDictionary[owner.gameObject].Token).Forget();
             }
 
             private async UniTask OnMove(EnemyBase owner, CancellationToken token)
@@ -45,16 +50,20 @@ namespace Suv
             }
 
             // EnemyBaseのOnTriggerEnter( 武器の攻撃を受けたときに呼び出している )
-            public void MoveCancel()
+            public void MoveCancel(EnemyBase owner)
             {
-                _ctsMove?.Cancel();
+                if (_ctsDictionary.ContainsKey(owner.gameObject))
+                    _ctsDictionary[owner.gameObject]?.Cancel();
             }
 
-            public void OnDestroy()
+            public void OnDestroy(EnemyBase owner)
             {
-                _ctsMove?.Cancel();
-                _ctsMove?.Dispose();
-                _ctsMove = null;
+                if (_ctsDictionary.ContainsKey(owner.gameObject))
+                {
+                    _ctsDictionary[owner.gameObject]?.Cancel();
+                    _ctsDictionary[owner.gameObject]?.Dispose();
+                    _ctsDictionary[owner.gameObject] = null;
+                }
             }
         }
     }
