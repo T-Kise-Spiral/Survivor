@@ -23,22 +23,23 @@ namespace Suv
             private async UniTask OnMove(EnemyBase owner, CancellationToken token)
             {
                 // プレイヤーの生成が終わるまで待機させる
-                while(true)
+                while (true)
                 {
                     await UniTask.DelayFrame(1, cancellationToken: token);
                     if (StageManager.I.PlayerCharacter) break;
                 }
 
                 // 生きている間、ダメージを受けていないときは基本的にずっとプレイヤーへ近づく
-                while(true)
+                while (true)
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(owner._enemyStatus._moveWaitTime), cancellationToken: token);
+                    await UniTask.Delay(TimeSpan.FromSeconds(owner._moveWaitTime), cancellationToken: token);
+
                     if (token.IsCancellationRequested) break;
 
                     // 移動
                     Vector3 moveVec = StageManager.I.PlayerCharacter.transform.position - owner.transform.position;
                     moveVec.Normalize();
-                    moveVec *= owner._enemyStatus._moveSpped;
+                    moveVec *= owner._moveSpped;
                     owner._rigidbody.AddForce(moveVec, ForceMode.Impulse);
                 }
             }

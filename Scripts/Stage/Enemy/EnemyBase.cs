@@ -1,47 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Suv
 {
 	public partial class EnemyBase : MonoBehaviour
 	{
-		[SerializeField] float _baseHp = 100.0f;
-		[SerializeField] float _baseAttackPow = 2.0f;
-		[SerializeField] float _baseMoveSpeed = 5.0f;
-		[SerializeField] float _baseMoveWaitTime = 0.5f;
-		[SerializeField] float _baseReceiveDamageCoolTime = 0.5f;
-
-		public class EnemyStatus
-		{
-			public float _hp;
-			public float _attackPow;
-			public float _moveSpped;
-			public float _moveWaitTime;
-			public float _receiveDamageCoolTime;
-
-			public EnemyStatus(float hp, float attackPow, float moveSpeed, float moveWaitTime, float receiveDamageCoolTime)
-			{
-				_hp = hp;
-				_attackPow = attackPow;
-				_moveSpped = moveSpeed;
-				_moveWaitTime = moveWaitTime;
-				_receiveDamageCoolTime = receiveDamageCoolTime;
-			}
-		}
-		protected EnemyStatus _enemyStatus;
+		[SerializeField] private Image _image = null;
+		private float _hp;
+		private float _attackPow;
+		private float _moveSpped;
+		private float _moveWaitTime;
+		private float _receiveDamageCoolTime;
 
 		private static readonly StateMoving _stateMoving = new StateMoving();
 		private static readonly StateReceivingDamage _stateReceivingDamage = new StateReceivingDamage();
         private EnemyStateBase _currentState = _stateMoving;
 
-        private Rigidbody _rigidbody;		
+        private Rigidbody _rigidbody;
 
-        private void Awake()
+        public void Initialize(EnemyStatusData statusData)
         {
             _rigidbody = GetComponent<Rigidbody>();
-			_enemyStatus = new EnemyStatus(_baseHp, _baseAttackPow, _baseMoveSpeed, _baseMoveWaitTime, _baseReceiveDamageCoolTime);
-        }
+
+			// パラメータ設定
+			if (_image) _image.sprite = statusData.Sprite;
+			_hp = statusData.Hp;
+			_attackPow = statusData.AttackPow;
+			_moveSpped = statusData.MoveSpeed;
+			_moveWaitTime = statusData.MoveWaitTime;
+			_receiveDamageCoolTime = statusData.ReceiveDamageCoolTime;
+
+		}
 
 		private void Start()
 		{
@@ -65,7 +56,7 @@ namespace Suv
         {
 			if (!other.gameObject.CompareTag(ConstStringManager.TAG_WEAPON)) return;
 
-			if (_enemyStatus._hp < 0)
+			if (_hp < 0)
             {
 
             }
@@ -81,7 +72,7 @@ namespace Suv
 			if (!other.gameObject.CompareTag(ConstStringManager.TAG_PLAYER)) return;
 
 			// プレイヤー側のダメージ処理を呼ぶ
-			StageManager.I.PlayerCharacter.OnCollisionEnemy(_enemyStatus._attackPow, transform.position);
+			StageManager.I.PlayerCharacter.OnCollisionEnemy(_attackPow, transform.position);
 
         }
 

@@ -23,7 +23,7 @@ namespace Suv
             // ダメージ判定後、一定時間停止してから動き出す
             private async UniTask OnReceveDamageCoolTimeAsync(EnemyBase owner, CancellationToken token)
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(owner._baseReceiveDamageCoolTime), cancellationToken: token);
+                await UniTask.Delay(TimeSpan.FromSeconds(owner._receiveDamageCoolTime), cancellationToken: token);
 
                 if (!token.IsCancellationRequested)
                 {
