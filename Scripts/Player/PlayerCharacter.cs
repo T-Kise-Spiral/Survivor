@@ -44,24 +44,22 @@ namespace Suv
 			_currentState = nextState;
 		}
 
-        // 敵と接触したとき
-        private void OnTriggerStay(Collider other)
+        // 敵と接触したときに敵側から呼ばれる
+		public void OnCollisionEnemy()
         {
-			if (!other.gameObject.CompareTag(TagManager.TAG_ENEMY)) return;
-
 			// 無敵時間ならダメージを受け付けない
 			if (_stateReceivingDamage.IsReceiveDamageCoolTime) return;
 
 			_hp = Mathf.Clamp(_hp - 10, 0, _hp);
 			if (isDead)
-            {
+			{
 
-            }
+			}
 			else
-            {
+			{
 				ChangeState(_stateReceivingDamage);
-            }
-        }
+			}
+		}
 
         private void OnDestroy()
         {

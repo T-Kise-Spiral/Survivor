@@ -50,7 +50,7 @@ namespace Suv
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(ChangeStandingStateAwaitTime), cancellationToken: token);
 
-                // 遷移までにキャンセルが発生(再移動)が行われていない
+                // 遷移までにキャンセルが発生(再移動)が行われていないなら遷移確定
                 if (!token.IsCancellationRequested)
                 {
                     owner.ChangeState(_stateIdling);
