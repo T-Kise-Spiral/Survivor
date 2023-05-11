@@ -40,7 +40,9 @@ namespace Suv
 
             PlayerCharacter player = request.asset as PlayerCharacter;
             _playerCharacter = Instantiate(player, new Vector3(0, 0.5f, 0), Quaternion.identity, _instantiateParent.transform);
-            _cinemachineVirtualCamera.Follow = player.transform;
+
+            // プレイヤーの子供にVirtualCameraがあるので、エディタ用のカメラは無効にする
+            _cinemachineVirtualCamera.gameObject.SetActive(false);
         }
     }
 }
