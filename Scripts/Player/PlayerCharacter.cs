@@ -19,6 +19,7 @@ namespace Suv
 		private float _hp = 100;
 
 		public bool isDead => _hp <= 0;
+		public Vector3 LastInputVec => _stateMoving.LastInputVec;
 
 		private void Awake()
         {

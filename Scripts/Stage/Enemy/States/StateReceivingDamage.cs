@@ -28,10 +28,12 @@ namespace Suv
             // ダメージ判定後、一定時間停止してから動き出す
             private async UniTask OnReceveDamageCoolTimeAsync(EnemyBase owner, CancellationToken token)
             {
+                owner._isReceivingDamage = true;
                 await UniTask.Delay(TimeSpan.FromSeconds(owner._receiveDamageCoolTime), cancellationToken: token);
 
                 if (!token.IsCancellationRequested)
                 {
+                    owner._isReceivingDamage = false;
                     owner.ChangeState(_stateMoving);
                 }
             }

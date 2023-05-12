@@ -11,6 +11,9 @@ namespace Suv
         public const string TAG_ENEMY = "Enemy";
         public const string TAG_PLAYER = "Player";
         public const string TAG_WEAPON = "Weapon";
+
+        public const string WEAPON_KNIFE = "Knife";
+        public const string WEAPON_BOMB = "Bomb";
     }
 
 }
