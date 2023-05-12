@@ -45,18 +45,19 @@ namespace Suv
 		}
 
         // 敵と接触したときに敵側から呼ばれる
-		public void OnCollisionEnemy()
+		public void OnCollisionEnemy(float damage, Vector3 enemyPos)
         {
 			// 無敵時間ならダメージを受け付けない
 			if (_stateReceivingDamage.IsReceiveDamageCoolTime) return;
 
-			_hp = Mathf.Clamp(_hp - 10, 0, _hp);
+			_hp = Mathf.Clamp(_hp - damage, 0, _hp);
 			if (isDead)
 			{
 
 			}
 			else
 			{
+				_stateReceivingDamage._enemyPos = enemyPos;
 				ChangeState(_stateReceivingDamage);
 			}
 		}

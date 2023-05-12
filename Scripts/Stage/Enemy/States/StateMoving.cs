@@ -11,37 +11,59 @@ namespace Suv
     {
         public class StateMoving : EnemyStateBase
         {
-            private CancellationTokenSource _ctsMove = null;
+            private Dictionary<GameObject, CancellationTokenSource> _ctsDictionary = new Dictionary<GameObject, CancellationTokenSource>();
 
             public override void OnEnter(EnemyBase owner, EnemyStateBase prevState)
             {
-                _ctsMove?.Cancel();
-                _ctsMove = new CancellationTokenSource();
-                OnMove(_ctsMove.Token).Forget();
+                if (!_ctsDictionary.ContainsKey(owner.gameObject))
+                {
+                    _ctsDictionary.Add(owner.gameObject, new CancellationTokenSource());
+                }
+
+                _ctsDictionary[owner.gameObject]?.Cancel();
+                _ctsDictionary[owner.gameObject] = new CancellationTokenSource();
+                OnMove(owner, _ctsDictionary[owner.gameObject].Token).Forget();
             }
 
-            private async UniTask OnMove(CancellationToken token)
+            private async UniTask OnMove(EnemyBase owner, CancellationToken token)
             {
-                while(true)
+                // プレイヤーの生成が終わるまで待機させる
+                while (true)
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+                    await UniTask.DelayFrame(1, cancellationToken: token);
+                    if (StageManager.I.PlayerCharacter) break;
+                }
+
+                // 生きている間、ダメージを受けていないときは基本的にずっとプレイヤーへ近づく
+                while (true)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(owner._moveWaitTime), cancellationToken: token);
 
                     if (token.IsCancellationRequested) break;
 
-
+                    // 移動
+                    Vector3 moveVec = StageManager.I.PlayerCharacter.transform.position - owner.transform.position;
+                    moveVec.Normalize();
+                    moveVec *= owner._moveSpped;
+                    owner._rigidbody.AddForce(moveVec, ForceMode.Impulse);
                 }
             }
 
-            public void MoveCancel()
+            // EnemyBaseのOnTriggerEnter( 武器の攻撃を受けたときに呼び出している )
+            public void MoveCancel(EnemyBase owner)
             {
-                _ctsMove?.Cancel();
+                if (_ctsDictionary.ContainsKey(owner.gameObject))
+                    _ctsDictionary[owner.gameObject]?.Cancel();
             }
 
-            public void OnDestroy()
+            public void OnDestroy(EnemyBase owner)
             {
-                _ctsMove?.Cancel();
-                _ctsMove?.Dispose();
-                _ctsMove = null;
+                if (_ctsDictionary.ContainsKey(owner.gameObject))
+                {
+                    _ctsDictionary[owner.gameObject]?.Cancel();
+                    _ctsDictionary[owner.gameObject]?.Dispose();
+                    _ctsDictionary[owner.gameObject] = null;
+                }
             }
         }
     }
