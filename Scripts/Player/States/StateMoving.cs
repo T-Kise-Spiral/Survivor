@@ -22,6 +22,7 @@ namespace Suv
 
             public override void OnUpdate(PlayerCharacter owner)
             {
+                if (owner.IsDead) return;
                 Move(owner);
             }
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   _sprite: {fileID: 0}
   _type: 0
   _attackPow: 2
-  _moveSpped: 50
+  _moveSpped: 20
   _useTimeSpan: 1
   _maxHitCount: 1
   _isRangeAttack: 0

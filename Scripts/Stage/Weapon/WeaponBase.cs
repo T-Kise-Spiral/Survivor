@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine.UI;
 
 namespace Suv
 {
@@ -29,7 +30,7 @@ namespace Suv
         private void Start()
         {
             if (!_weaponCanvasObject)
-                _weaponCanvasObject = transform.GetComponentInChildren<Canvas>().gameObject;
+                _weaponCanvasObject = transform.GetComponentInChildren<Image>().gameObject;
 
             if (!_boxCollider)
                 _boxCollider = GetComponent<BoxCollider>();
@@ -69,8 +70,6 @@ namespace Suv
 
             // 範囲攻撃の場合はヒット数の上限なし
             if (_weaponData.IsRangeAttack) return;
-
-            Debug.Log("Hit OnWeapon");
 
             // 上限回数ヒット
             _currentHitCount--;
