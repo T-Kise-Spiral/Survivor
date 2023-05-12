@@ -13,7 +13,6 @@ namespace Suv
         {
             base.OnUseWeapon();
 
-            // ????????????
             _moveVec = (StageManager.I.PlayerCharacter.transform.position + StageManager.I.PlayerCharacter.LastInputVec) - StageManager.I.PlayerCharacter.transform.position;
             _moveVec.y = 0;
             _moveVec.Normalize();

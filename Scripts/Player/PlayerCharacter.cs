@@ -8,6 +8,8 @@ namespace Suv
 {
     public partial class PlayerCharacter : MonoBehaviour
     {
+		[SerializeField] Slider _slider;
+			 
 		private static readonly StateIdling _stateIdling = new StateIdling();
 		private static readonly StateMoving _stateMoving = new StateMoving();
 		private static readonly StateReceivingDamage _stateReceivingDamage = new StateReceivingDamage();
@@ -18,13 +20,14 @@ namespace Suv
 
 		private float _hp = 100;
 
-		public bool isDead => _hp <= 0;
+		public bool IsDead => _hp <= 0;
 		public Vector3 LastInputVec => _stateMoving.LastInputVec;
 
 		private void Awake()
         {
 			_playerInput = GetComponent<PlayerInput>();
 			_rigidbody = GetComponent<Rigidbody>();
+			UpdateHpBar();
         }
 
         private void Start()
@@ -52,7 +55,8 @@ namespace Suv
 			if (_stateReceivingDamage.IsReceiveDamageCoolTime) return;
 
 			_hp = Mathf.Clamp(_hp - damage, 0, _hp);
-			if (isDead)
+			UpdateHpBar();
+			if (IsDead)
 			{
 
 			}
@@ -62,6 +66,12 @@ namespace Suv
 				ChangeState(_stateReceivingDamage);
 			}
 		}
+
+		private void UpdateHpBar()
+        {
+			if (_slider)
+				_slider.value = _hp;
+        }
 
         private void OnDestroy()
         {

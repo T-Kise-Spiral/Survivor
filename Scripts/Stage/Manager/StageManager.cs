@@ -17,6 +17,9 @@ namespace Suv
         private PlayerCharacter _playerCharacter;
         public PlayerCharacter PlayerCharacter => _playerCharacter;
 
+        private DamageUIManager _damageUIManager;
+        public DamageUIManager DamageUIManager => _damageUIManager;
+
         private void Awake()
         {
             if (I == null)
@@ -31,6 +34,7 @@ namespace Suv
         {
             // プレイヤー生成
             await OnInstantiatePlayer();
+            await OnInstantiateDamageUIManager();
         }
 
         private async UniTask OnInstantiatePlayer()
@@ -43,6 +47,21 @@ namespace Suv
 
             // プレイヤーの子供にVirtualCameraがあるので、エディタ用のカメラは無効にする
             _cinemachineVirtualCamera.gameObject.SetActive(false);
+        }
+
+        private async UniTask OnInstantiateDamageUIManager()
+        {
+            var request = Resources.LoadAsync<DamageUIManager>(ConstStringManager.RESOURCES_DAMAGE_UI_MANAGER);
+            await request;
+
+            DamageUIManager damageUIManager = request.asset as DamageUIManager;
+            _damageUIManager = Instantiate(damageUIManager, Vector3.zero, Quaternion.identity, _instantiateParent.transform);
+        }
+
+
+        private void OnDestroy()
+        {
+            I = null;
         }
     }
 }

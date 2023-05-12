@@ -57,9 +57,10 @@ namespace Suv
         {
 			if (!other.gameObject.CompareTag(ConstStringManager.TAG_WEAPON) || _isReceivingDamage) return;
 
-			Debug.Log("Hit OnEnemy");
+			float damage = other.GetComponent<WeaponBase>().WeaponAttackPow;
+			_hp -= damage;
+			StageManager.I.DamageUIManager.PopDamageText(transform.position, damage);
 
-			_hp -= other.GetComponent<WeaponBase>().WeaponAttackPow;
 			if (_hp < 0)
             {
 
