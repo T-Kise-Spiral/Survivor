@@ -14,8 +14,11 @@ namespace Suv
         {
             private const float ChangeStandingStateAwaitTime = 1.0f;
 
-            private bool isChanging = false;
+            private bool _isChanging = false;
+            private Vector3 _lastInputVec = Vector3.zero;
             private CancellationTokenSource _ctsChangeIdling = null;
+
+            public Vector3 LastInputVec => _lastInputVec;
 
             public override void OnUpdate(PlayerCharacter owner)
             {
@@ -27,9 +30,9 @@ namespace Suv
                 Vector2 inputVec = owner._playerInput.actions["Move"].ReadValue<Vector2>();
 
                 // 未入力中は一定時間後にIdlingへ遷移するようにする
-                if (inputVec == Vector2.zero && !isChanging)
+                if (inputVec == Vector2.zero && !_isChanging)
                 {
-                    isChanging = true;
+                    _isChanging = true;
                     _ctsChangeIdling?.Cancel();
                     _ctsChangeIdling = new CancellationTokenSource();
                     OnStandStateChanging(owner, _ctsChangeIdling.Token).Forget();
@@ -37,11 +40,13 @@ namespace Suv
                 // 入力しているので移動処理
                 else if (inputVec != Vector2.zero)
                 {
-                    isChanging = false;
+                    _isChanging = false;
                     _ctsChangeIdling?.Cancel();
 
                     Vector3 moveVec = new Vector3(inputVec.x, 0, inputVec.y);
+                    moveVec *= 0.5f;
                     owner._rigidbody.AddForce(moveVec, ForceMode.Impulse);
+                    _lastInputVec = moveVec;
                 }
             }
 
@@ -54,7 +59,7 @@ namespace Suv
                 if (!token.IsCancellationRequested)
                 {
                     owner.ChangeState(_stateIdling);
-                    isChanging = false;
+                    _isChanging = false;
                 }
             }
 

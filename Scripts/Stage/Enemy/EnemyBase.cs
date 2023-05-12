@@ -19,6 +19,7 @@ namespace Suv
         private EnemyStateBase _currentState = _stateMoving;
 
         private Rigidbody _rigidbody;
+		private bool _isReceivingDamage = false;
 
         public void Initialize(EnemyStatusData statusData)
         {
@@ -54,8 +55,11 @@ namespace Suv
 
         private void OnTriggerEnter(Collider other)
         {
-			if (!other.gameObject.CompareTag(ConstStringManager.TAG_WEAPON)) return;
+			if (!other.gameObject.CompareTag(ConstStringManager.TAG_WEAPON) || _isReceivingDamage) return;
 
+			Debug.Log("Hit OnEnemy");
+
+			_hp -= other.GetComponent<WeaponBase>().WeaponAttackPow;
 			if (_hp < 0)
             {
 
